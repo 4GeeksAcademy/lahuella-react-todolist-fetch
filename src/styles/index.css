@@ -17,13 +17,13 @@ body {
     padding: 20px;
     box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.5);
     background-color: #1e1e1e;
-    border-radius: 8px;
+    border-radius: 12px;
     text-align: center;
   }
   
   .container h2 {
     font-family: "Doto", serif;
-    font-size: 24px;
+    font-size: 32px;
     color: #f0f0f0;
     margin-bottom: 20px;
   }
@@ -31,7 +31,7 @@ body {
   .container input[type="text"] {
     width: 100%;
     padding: 12px;
-    border-radius: 5px;
+    border-radius: 10px;
     border: 1px solid #555;
     background-color: #2c2c2c;
     color: #f0f0f0;
