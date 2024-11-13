@@ -1,12 +1,93 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #121212;
+    color: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-image: radial-gradient(#333333 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
 
-/* 
-
-    You can write your own styles here...
-    
-    
-    ...Or you can use the import command to include 
-    other sylesheets into your bunde as well, e.j:
-    
-    import 'relative/path/to/stylesheet.scss';
-
-*/
+  .container {
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.5);
+    background-color: #1e1e1e;
+    border-radius: 8px;
+    text-align: center;
+  }
+  
+  .container h2 {
+    font-family: "Doto", serif;
+    font-size: 24px;
+    color: #f0f0f0;
+    margin-bottom: 20px;
+  }
+  
+  .container input[type="text"] {
+    width: 100%;
+    padding: 12px;
+    border-radius: 5px;
+    border: 1px solid #555;
+    background-color: #2c2c2c;
+    color: #f0f0f0;
+    font-size: 16px;
+    margin-bottom: 15px;
+    outline: none;
+    transition: all 0.3s;
+  }
+  
+  .container input[type="text"]:focus {
+    border-color: #007bff;
+    box-shadow: 0px 0px 5px rgba(0, 123, 255, 0.2);
+  }
+  
+  .container ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .container ul li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    background-color: #2a2a2a;
+    border-radius: 5px;
+    margin-bottom: 8px;
+    font-size: 16px;
+    color: #e0e0e0;
+    transition: background-color 0.3s, box-shadow 0.3s;
+  }
+  
+  .container ul li:hover {
+    background-color: #333;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .container ul li.no-tasks {
+    color: #888;
+    font-style: italic;
+  }
+  
+  .container ul li span {
+    display: none;
+    cursor: pointer;
+    color: #e63946;
+    font-weight: bold;
+    transition: color 0.3s;
+  }
+  
+  .container ul li:hover span {
+    display: inline;
+  }
+  
+  .container ul li span:hover {
+    color: #ff4d4d;
+  }
+  
