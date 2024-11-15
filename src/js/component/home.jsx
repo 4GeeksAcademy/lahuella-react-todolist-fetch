@@ -1,10 +1,12 @@
 import React from "react";
 import ToDo from "./ToDo"
-
-//create your first component
+import ThemeSwitch from "./ThemeSwitch";
 const Home = () => {
 	return (
+		<>
+		<ThemeSwitch />
 		<ToDo />
+		</>
 	);
 };
 

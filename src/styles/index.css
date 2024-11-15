@@ -1,16 +1,77 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #121212;
+    background-color: #131313;
     color: #f0f0f0;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
     margin: 0;
-    background-image: radial-gradient(#333333 1px, transparent 1px);
+    background-image: radial-gradient(#747474 1px, transparent 1px);
     background-size: 20px 20px;
   }
+  .theme-container {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+  }
+  
+  .theme-text {
+    font-family: "Doto", serif;
+    font-size: 16px;
+    transition: color 0.3s ease;
+    margin: 0;
+  }
+  body.dark-mode .theme-text {
+    color: #ffffff;
+  }
 
+  body.light-mode .theme-text {
+    color: #000000;
+  }
+  
+  .switch {
+    width: 50px;
+    height: 25px;
+    border-radius: 30px;
+    background-color: #ccc;
+    position: relative;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  
+  .handle {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+    color: #333;
+    background-color: white;
+    border-radius: 50%;
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    transition: all 0.3s ease;
+  }
+  
+  
+  body.light-mode {
+    background-color: #ffffff;
+    color: #2b2b2b;
+  }
+  
+  body.dark-mode {
+    background-color: #2e2e2e;
+    color: #ffffff;
+  }
   .container {
     width: 100%;
     max-width: 400px;
@@ -24,10 +85,12 @@ body {
   .container h2 {
     font-family: "Doto", serif;
     font-size: 32px;
-    color: #f0f0f0;
-    margin-bottom: 20px;
+    color: white;
   }
-  
+  p {
+    font-family: "Doto", serif;
+    color: white;
+  }
   .container input[type="text"] {
     width: 100%;
     padding: 12px;
