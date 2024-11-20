@@ -1,80 +1,85 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-function TodoList() {
+const ToDo = () => {
   const [tasks, setTasks] = useState([]);
   const [inputValue, setInputValue] = useState("");
-  const API_URL = "https://playground.4geeks.com/todo/openapi.json";
-
   useEffect(() => {
-    const fetchTasks = async () => {
-      try {
-        const response = await fetch(API_URL);
-        if (response.ok) {
-          const data = await response.json();
-          setTasks(data);
-        } else {
-          console.error("Error al cargar las tareas");
+    fetch('https://playground.4geeks.com/todo/users/lahuella')
+      .then(resp => resp.json())
+      .then(respJson => {
+        console.log(respJson);
+        if (respJson.todos) {
+          setTasks(respJson.todos);
         }
-      } catch (error) {
-        console.error("Error de conexión:", error);
-      }
-    };
-    fetchTasks();
+      })
+      .catch(error => console.error('Error fetching todos:', error));
   }, []);
 
-  const addTask = async (e) => {
-    if (e.key === "Enter" && inputValue.trim() !== "") {
-      const newTask = inputValue.trim();
-      try {
-        const response = await fetch(API_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ task: newTask }),
-        });
-        if (response.ok) {
-          setTasks([...tasks, newTask]);
-          setInputValue("");
-        } else {
-          console.error("Error al agregar la tarea");
-        }
-      } catch (error) {
-        console.error("Error de conexión:", error);
-      }
-    }
-  };
-
-  const deleteTask = async (index) => {
-    const taskToDelete = tasks[index];
+  const createTodo = async (task) => {
     try {
-      const response = await fetch(`${API_URL}/${taskToDelete.id}`, {
-        method: "DELETE",
+      const response = await fetch('https://playground.4geeks.com/todo/todos/lahuella', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ label: task, is_done: false }),
       });
-      if (response.ok) {
-        setTasks(tasks.filter((_, i) => i !== index));
-      } else {
-        console.error("Error al eliminar la tarea");
+
+      if (!response.ok) {
+        throw new Error(`Error Creating Task: ${response.statusText}`);
       }
+
+      const newTask = await response.json();
+      console.log('New Task Created:', newTask);
+
+      setTasks((prevTasks) => [...prevTasks, newTask]);
+
     } catch (error) {
-      console.error("Error de conexión:", error);
+      console.error('Error Adding Task:', error);
     }
   };
 
-  const clearAllTasks = async () => {
+  const AddTask = async (e) => {
+    if (e.key === 'Enter' && inputValue.trim() !== '') {
+      await createTodo(inputValue.trim());
+      setInputValue('');
+    }
+  };
+
+  const DeleteTaskByIndex = async (taskId) => {
     try {
-      const response = await fetch(API_URL, {
-        method: "DELETE",
+      const response = await fetch(`https://playground.4geeks.com/todo/todos/${taskId}`, {
+        method: 'DELETE',
+        headers: { 'accept': 'application/json', },
       });
-      if (response.ok) {
-        setTasks([]);
-      } else {
-        console.error("Error al limpiar las tareas");
+
+      if (!response.ok) {
+        throw new Error(`Error trying to eliminate task: ${response.statusText}`);
       }
+
+      setTasks((prevTasks) => prevTasks.filter(task => task.id !== taskId));
+      console.log('Task Deleted');
     } catch (error) {
-      console.error("Error de conexión:", error);
+      console.error('Error deleting task:', error);
     }
   };
 
+  const deleteAllTasks = async () => {
+    try {
+      const response = await fetch('https://playground.4geeks.com/todo/users/lahuella', {
+        method: 'DELETE',
+        headers: {'accept': 'application/json',},
+      });
+      if (!response.ok) {
+        throw new Error(`Error al eliminar todas las tareas: ${response.statusText}`);
+      }
+      setTasks([]);
+      console.log('Todas las tareas han sido eliminadas correctamente');
+    } catch (error) {
+      console.error('Error eliminando todas las tareas:', error);
+    }
+  };
   return (
     <div className="container">
       <h2>Just do it</h2>
@@ -82,17 +87,20 @@ function TodoList() {
       <p className="task-counter">
         {tasks.length} {tasks.length === 1 ? "task" : "tasks"} remaining
       </p>
+
       <input
         type="text"
         placeholder="Add a new task..."
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
-        onKeyDown={addTask}
+        onKeyDown={AddTask}
         className="task-input"
       />
-      <button onClick={clearAllTasks} className="clear-button">
-        Clear All Tasks
-      </button>
+      <div className="button-container">
+        <button onClick={deleteAllTasks} className="delete-all-tasks">
+          Eliminar todas las tareas
+        </button>
+      </div>
       <ul className="task-list">
         <AnimatePresence>
           {tasks.length === 0 ? (
@@ -105,21 +113,19 @@ function TodoList() {
               No more tasks
             </motion.li>
           ) : (
-            tasks.map((task, index) => (
+            tasks.map((task) => (
               <motion.li
-                key={index}
+                key={task.id}
                 className="task-item"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.3 }}
               >
-                {task}
-                <span
-                  className="delete-task"
-                  onClick={() => deleteTask(index)}
-                >
-                  <i className="fas fa-trash-alt"></i>
+                {task.label}
+                <span className="delete-task" 
+                onClick={() => DeleteTaskByIndex(task.id)}>
+                 <i className="fas fa-trash-alt"></i>
                 </span>
               </motion.li>
             ))
@@ -128,6 +134,7 @@ function TodoList() {
       </ul>
     </div>
   );
-}
+};
 
-export default TodoList;
+export default ToDo;
+
