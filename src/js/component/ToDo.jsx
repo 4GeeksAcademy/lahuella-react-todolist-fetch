@@ -20,7 +20,7 @@ const ToDo = () => {
       setTasks(tasksData.todos || []);
     };
     initializeUser();
-  }, []);  
+  }, []);
   const createTodo = async (task) => {
     const response = await fetch('https://playground.4geeks.com/todo/todos/lahuella', {
       method: 'POST',
@@ -49,10 +49,23 @@ const ToDo = () => {
   };
 
   const deleteAllTasks = async () => {
-    const deleteAll = tasks.map(item => deleteTask (item.id))
-    await Promise.all(deleteAll).then(() => setTasks ([]));
+    const deleteAll = tasks.map(item => deleteTask(item.id))
+    await Promise.all(deleteAll).then(() => setTasks([]));
   };
 
+  const editTask = async (taskId, newLabel) => {
+    await fetch(`https://playground.4geeks.com/todo/todos/${taskId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ label: newLabel, is_done: false }),
+    });
+
+    setTasks((prevTasks) =>
+      prevTasks.map((task) =>
+        task.id === taskId ? { ...task, label: newLabel } : task
+      )
+    );
+  };
   return (
     <div className="container">
       <h2>Just do it</h2>
@@ -60,7 +73,6 @@ const ToDo = () => {
       <p className="task-counter">
         {tasks.length} {tasks.length === 1 ? "task" : "tasks"} remaining
       </p>
-
       <input
         type="text"
         placeholder="Add a new task..."
@@ -89,13 +101,18 @@ const ToDo = () => {
             tasks.map((task) => (
               <motion.li
                 key={task.id}
-                className="task-item"
+                className={`task-item ${task.is_done ? 'completed' : ''}`}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.3 }}
               >
-                {task.label}
+                <input
+                  type="text"
+                  value={task.label}
+                  onChange={(e) => editTask(task.id, e.target.value)}
+                  className="task-edit-input"
+                />
                 <span
                   className="delete-task"
                   onClick={() => deleteTask(task.id)}
@@ -107,6 +124,7 @@ const ToDo = () => {
           )}
         </AnimatePresence>
       </ul>
+
     </div>
   );
 };
