@@ -4,82 +4,55 @@ import { motion, AnimatePresence } from "framer-motion";
 const ToDo = () => {
   const [tasks, setTasks] = useState([]);
   const [inputValue, setInputValue] = useState("");
+
   useEffect(() => {
-    fetch('https://playground.4geeks.com/todo/users/lahuella')
-      .then(resp => resp.json())
-      .then(respJson => {
-        console.log(respJson);
-        if (respJson.todos) {
-          setTasks(respJson.todos);
-        }
-      })
-      .catch(error => console.error('Error fetching todos:', error));
-  }, []);
-
-  const createTodo = async (task) => {
-    try {
-      const response = await fetch('https://playground.4geeks.com/todo/todos/lahuella', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ label: task, is_done: false }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Error Creating Task: ${response.statusText}`);
+    const initializeUser = async () => {
+      const response = await fetch('https://playground.4geeks.com/todo/users/lahuella');
+      if (response.status === 404) {
+        await fetch('https://playground.4geeks.com/todo/users/lahuella', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: "lahuella" }),
+        });
       }
+      const tasksResponse = await fetch('https://playground.4geeks.com/todo/users/lahuella');
+      const tasksData = await tasksResponse.json();
+      setTasks(tasksData.todos || []);
+    };
+    initializeUser();
+  }, []);  
+  const createTodo = async (task) => {
+    const response = await fetch('https://playground.4geeks.com/todo/todos/lahuella', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ label: task, is_done: false }),
+    });
 
-      const newTask = await response.json();
-      console.log('New Task Created:', newTask);
-
-      setTasks((prevTasks) => [...prevTasks, newTask]);
-
-    } catch (error) {
-      console.error('Error Adding Task:', error);
-    }
+    const newTask = await response.json();
+    setTasks((prevTasks) => [...prevTasks, newTask]);
   };
 
-  const AddTask = async (e) => {
+  const addTask = async (e) => {
     if (e.key === 'Enter' && inputValue.trim() !== '') {
       await createTodo(inputValue.trim());
       setInputValue('');
     }
   };
 
-  const DeleteTaskByIndex = async (taskId) => {
-    try {
-      const response = await fetch(`https://playground.4geeks.com/todo/todos/${taskId}`, {
-        method: 'DELETE',
-        headers: { 'accept': 'application/json', },
-      });
+  const deleteTask = async (taskId) => {
+    await fetch(`https://playground.4geeks.com/todo/todos/${taskId}`, {
+      method: 'DELETE',
+      headers: { accept: 'application/json' },
+    });
 
-      if (!response.ok) {
-        throw new Error(`Error trying to eliminate task: ${response.statusText}`);
-      }
-
-      setTasks((prevTasks) => prevTasks.filter(task => task.id !== taskId));
-      console.log('Task Deleted');
-    } catch (error) {
-      console.error('Error deleting task:', error);
-    }
+    setTasks((prevTasks) => prevTasks.filter((task) => task.id !== taskId));
   };
 
   const deleteAllTasks = async () => {
-    try {
-      const response = await fetch('https://playground.4geeks.com/todo/users/lahuella', {
-        method: 'DELETE',
-        headers: {'accept': 'application/json',},
-      });
-      if (!response.ok) {
-        throw new Error(`Error al eliminar todas las tareas: ${response.statusText}`);
-      }
-      setTasks([]);
-      console.log('Todas las tareas han sido eliminadas correctamente');
-    } catch (error) {
-      console.error('Error eliminando todas las tareas:', error);
-    }
+    const deleteAll = tasks.map(item => deleteTask (item.id))
+    await Promise.all(deleteAll).then(() => setTasks ([]));
   };
+
   return (
     <div className="container">
       <h2>Just do it</h2>
@@ -93,7 +66,7 @@ const ToDo = () => {
         placeholder="Add a new task..."
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
-        onKeyDown={AddTask}
+        onKeyDown={addTask}
         className="task-input"
       />
       <div className="button-container">
@@ -123,9 +96,11 @@ const ToDo = () => {
                 transition={{ duration: 0.3 }}
               >
                 {task.label}
-                <span className="delete-task" 
-                onClick={() => DeleteTaskByIndex(task.id)}>
-                 <i className="fas fa-trash-alt"></i>
+                <span
+                  className="delete-task"
+                  onClick={() => deleteTask(task.id)}
+                >
+                  <i className="fas fa-trash-alt"></i>
                 </span>
               </motion.li>
             ))
@@ -137,4 +112,3 @@ const ToDo = () => {
 };
 
 export default ToDo;
-
