@@ -12,7 +12,7 @@ const ToDo = () => {
         await fetch('https://playground.4geeks.com/todo/users/lahuella', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username: "lahuella" }),
+          body: JSON.stringify({ user_name: "lahuella" }),
         });
       }
       const tasksResponse = await fetch('https://playground.4geeks.com/todo/users/lahuella');
